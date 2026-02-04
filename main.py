@@ -13,11 +13,11 @@ with open('./data.json') as f:
 def hello_world():
     return 'Hello, World!'
 
-# #This is a new function
-# @app.get('/students')
-# async def get_students():
-#     return data
-# #End of the new function
+#This is a new function
+@app.get('/students')
+async def get_students():
+    return data
+#End of the new function
 
 #Another Function
 @app.get('/students/{id}')
@@ -41,27 +41,20 @@ async def get_students(pref=None):
 
 @app.get('/statistics')
 async def get_statistics():
-    statistics = {}
+    statistics = {} #creates an empty dictionary
 
-    students = data
+    for student in data: #loops through every student in the dataset
+        if student['pref'] in statistics: #checks: “Have we already created a count for this meal preference?”
+            statistics[student['pref']] += 1 #If "Chicken" (or whatever pref) already exists in stats, increase its count by 1
+        else:
+            statistics[student['pref']] = 1 #If this is the first time we’re seeing that preference, we create it in the dictionary and start it at 1
 
-    # If data.json is a dictionary (not a list), try to extract students list
-    if isinstance(data, dict):
-        students = data.get('students', [])
-
-    for student in students:
-        pref = student.get('pref')
-        programme = student.get('programme')
-
-        if pref:
-            statistics[pref] = statistics.get(pref, 0) + 1
-
-        if programme:
-            statistics[programme] = statistics.get(programme, 0) + 1
+        if student['programme'] in statistics:
+            statistics[student['programme']] += 1 #now we’re checking the student’s programme
+        else:
+            statistics[student['programme']] = 1 #If it doesn’t exist yet, create it and start at 1
 
     return statistics
-
-
 
 #Add Function
 @app.get('/add/{a}/{b}')
